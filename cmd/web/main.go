@@ -11,19 +11,6 @@ import (
 	product "oct.loc/services"
 )
 
-func home(w http.ResponseWriter, r *http.Request) {
-
-	w.WriteHeader(http.StatusAccepted)
-	w.Header().Set("Content-Type", "application/json")
-	resp := make(map[string]string)
-	resp["message"] = "status Sreated"
-	jsonResp, err := json.Marshal(resp)
-	if err != nil {
-		log.Fatalf("Error happened in JSON marshal. Err: %s", err)
-	}
-	w.Write(jsonResp)
-}
-
 type Product struct {
 	Name        string
 	Description string
@@ -95,13 +82,44 @@ func productShow(w http.ResponseWriter, r *http.Request) {
 	w.Write(jsonResp)
 }
 
+func productUpdate(w http.ResponseWriter, r *http.Request) {
+	params := mux.Vars(r)
+
+	u64, _ := strconv.ParseUint(params["id"], 10, 32)
+	id := uint32(u64)
+
+	f64, _ := strconv.ParseFloat(r.FormValue("Price"), 32)
+	price := float32(f64)
+
+	Product := product.Product{}
+
+	Product.SetId(id)
+	Product.SetName(r.FormValue("Name"))
+	Product.SetDescription(r.FormValue("Description"))
+	Product.SetPrice(price)
+
+	models.ProductUpdate(Product)
+}
+
+func productDelete(w http.ResponseWriter, r *http.Request) {
+
+	params := mux.Vars(r)
+
+	u64, _ := strconv.ParseUint(params["id"], 10, 32)
+	id := uint32(u64)
+
+	models.ProductDelete(id)
+}
+
 func main() {
 
 	mux := mux.NewRouter()
-	mux.HandleFunc("/", home).Methods("GET")
+
 	mux.HandleFunc("/product", productIndex).Methods("GET")
-	mux.HandleFunc("/product/{id}", productShow).Methods("GET")
 	mux.HandleFunc("/product", productStore).Methods("POST")
+	mux.HandleFunc("/product/{id}", productShow).Methods("GET")
+	mux.HandleFunc("/product/{id}", productUpdate).Methods("PUT")
+	mux.HandleFunc("/product/{id}", productDelete).Methods("DELETE")
 
 	log.Println("Server Start on http://127.0.0.1:4000")
 	err := http.ListenAndServe(":4000", mux)

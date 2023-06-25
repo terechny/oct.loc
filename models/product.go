@@ -22,12 +22,10 @@ func ConnectDB() {
 		panic(err.Error())
 	}
 	database = db
-
-	//fmt.Println("Successfully connected to database!")
 }
 
 type Product struct {
-	Id          int
+	Id          uint32
 	Name        string
 	Description string
 	Price       float32
@@ -96,4 +94,32 @@ func ProductStore(p product.Product) (int64, error) {
 	}
 
 	return lastInserId, nil
+}
+
+func ProductUpdate(p product.Product) {
+
+	ConnectDB()
+	defer database.Close()
+
+	result, err := database.Exec("UPDATE `products` SET  `name` = ?, `description` = ?, `price` = ? WHERE `id` = ?", p.Name(), p.Description(), p.Price(), p.Id())
+
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	fmt.Println(result.RowsAffected())
+}
+
+func ProductDelete(id uint32) {
+
+	ConnectDB()
+	defer database.Close()
+
+	result, err := database.Exec("DELETE FROM products WHERE `id` = ?", id)
+
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	fmt.Println(result.RowsAffected())
 }

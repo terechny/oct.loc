@@ -26,6 +26,11 @@ func (p *Product) SetPrice(price float32) {
 	p.price = price
 }
 
+func (p *Product) SetId(id uint32) {
+
+	p.id = id
+}
+
 func (p *Product) Name() string {
 	return p.name
 }
@@ -36,6 +41,10 @@ func (p *Product) Description() string {
 
 func (p *Product) Price() float32 {
 	return p.price
+}
+
+func (p *Product) Id() uint32 {
+	return p.id
 }
 
 func (p Product) Store() {
