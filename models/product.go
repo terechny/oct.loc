@@ -5,7 +5,7 @@ import (
 	"fmt"
 
 	_ "github.com/go-sql-driver/mysql"
-	product "oct.loc/services"
+	product "oct.loc/services/product"
 )
 
 var database *sql.DB

@@ -7,8 +7,9 @@ import (
 	"strconv"
 
 	"github.com/gorilla/mux"
+	userController "oct.loc/controllers/user"
 	models "oct.loc/models"
-	product "oct.loc/services"
+	product "oct.loc/services/product"
 )
 
 type Product struct {
@@ -19,13 +20,18 @@ type Product struct {
 
 func productIndex(w http.ResponseWriter, r *http.Request) {
 
-	w.WriteHeader(http.StatusAccepted)
-	w.Header().Set("Content-Type", "application/json")
 	products := models.GetProducts()
 	jsonResp, err := json.Marshal(products)
 	if err != nil {
 		log.Fatalf("Error happened in JSON marshal. Err: %s", err)
 	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Access-Control-Allow-Origin", "http://oct.front")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+	w.Header().Set("Access-Control-Allow-Methods", "GET")
+
+	w.WriteHeader(http.StatusOK)
 	w.Write(jsonResp)
 }
 
@@ -120,6 +126,8 @@ func main() {
 	mux.HandleFunc("/product/{id}", productShow).Methods("GET")
 	mux.HandleFunc("/product/{id}", productUpdate).Methods("PUT")
 	mux.HandleFunc("/product/{id}", productDelete).Methods("DELETE")
+	mux.HandleFunc("/user", userController.Store).Methods("POST")
+	mux.HandleFunc("/user/{id}", userController.Show).Methods("GET")
 
 	log.Println("Server Start on http://127.0.0.1:4000")
 	err := http.ListenAndServe(":4000", mux)

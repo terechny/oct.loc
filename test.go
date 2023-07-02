@@ -1,7 +1,7 @@
 package main
 
 import (
-	product "oct.loc/services"
+	product "oct.loc/services/product"
 )
 
 func main() {
