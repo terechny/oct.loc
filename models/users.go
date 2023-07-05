@@ -7,7 +7,7 @@ import (
 )
 
 type User struct {
-	id         uint32
+	Id         uint32
 	Firstname  string
 	Secondname string
 	Email      string
@@ -16,8 +16,6 @@ type User struct {
 }
 
 func UserStore(user user.User) (int64, error) {
-
-	fmt.Println(user)
 
 	ConnectDB()
 	defer database.Close()
@@ -45,11 +43,39 @@ func UserGet(id uint32) User {
 
 	row := database.QueryRow(`SELECT id, firstname, secondname, email, phone, password FROM users WHERE id = ?`, id)
 
-	err := row.Scan(&user.id, &user.Firstname, &user.Secondname, &user.Email, &user.Phone, &user.Password)
+	err := row.Scan(&user.Id, &user.Firstname, &user.Secondname, &user.Email, &user.Phone, &user.Password)
 
 	if err != nil {
 		fmt.Println(err)
 	}
 
 	return user
+}
+
+func GetUsers() []User {
+
+	ConnectDB()
+	defer database.Close()
+
+	rows, err := database.Query("SELECT id, firstname, secondname, email, phone FROM `users`")
+
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	defer rows.Close()
+
+	users := []User{}
+
+	for rows.Next() {
+		user := User{}
+		err := rows.Scan(&user.Id, &user.Firstname, &user.Secondname, &user.Email, &user.Phone)
+		if err != nil {
+			fmt.Println(err)
+			continue
+		}
+		users = append(users, user)
+	}
+
+	return users
 }

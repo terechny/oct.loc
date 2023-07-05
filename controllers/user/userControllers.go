@@ -59,3 +59,21 @@ func Show(w http.ResponseWriter, r *http.Request) {
 	w.Write(jsonResp)
 
 }
+
+func Index(w http.ResponseWriter, r *http.Request) {
+
+	users := models.GetUsers()
+
+	jsonResp, err := json.Marshal(users)
+	if err != nil {
+		log.Fatalf("Error happened in JSON marshal. Err: %s", err)
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Access-Control-Allow-Origin", "http://oct.front")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+	w.Header().Set("Access-Control-Allow-Methods", "GET")
+
+	w.WriteHeader(http.StatusOK)
+	w.Write(jsonResp)
+}

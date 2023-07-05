@@ -128,6 +128,7 @@ func main() {
 	mux.HandleFunc("/product/{id}", productDelete).Methods("DELETE")
 	mux.HandleFunc("/user", userController.Store).Methods("POST")
 	mux.HandleFunc("/user/{id}", userController.Show).Methods("GET")
+	mux.HandleFunc("/user", userController.Index).Methods("GET")
 
 	log.Println("Server Start on http://127.0.0.1:4000")
 	err := http.ListenAndServe(":4000", mux)
